@@ -1,0 +1,18 @@
+.App {
+  text-align: center;
+}
+.header{
+  background-color:bisque;
+  height: 10vh;
+}
+.home{
+  background-color: beige;
+  height: 80vh;
+}
+.footer{
+  background-color: brown;
+  height: 10vh;
+}
+
+
+
