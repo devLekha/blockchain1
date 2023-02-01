@@ -2,7 +2,6 @@
 import './App.css';
 import Header from './components/header';
 import Footer from './components/footer';
-// import Home from './components/home';
 import { ethers } from "ethers";
 import { useEffect, useState } from 'react';
 import { contract_abi } from './contract_abi';
@@ -18,70 +17,67 @@ function App() {
   const [Receiver, setReceiver] = useState('')
   const [Amount, setAmount] = useState('')
   const [Decimal, setDecimal] = useState(0)
-  
+
   const isMetamaskInstalled = () => {
     return ethereum && ethereum.isMetaMask;
-}
+  }
   const connectWallet = async () => {
     if (!isMetamaskInstalled()) {
-        // prompt the user to install it
-        console.log("MetaMask is not installed :(");
-        // connectButton.value = "Click here to install metamask";
-        // connectButton.onclick = installMetaMask;
+      console.log("MetaMask is not installed :(");
     } else {
-        console.log("MetaMask is installed Hurray!!!!!");
-        setAccount(await ethereum.request({ method: "eth_requestAccounts" }));
-        updateContract()
-        // connectButton.onclick = connectMetaMask;
+      console.log("MetaMask is installed Hurray!!!!!");
+      setAccount(await ethereum.request({ method: "eth_requestAccounts" }));
+      updateContract()
     }
-}
+  }
 
-  const updateContract = async ()=>{
-    const tempSigner =  provider.getSigner();
-    const tempContract =  new ethers.Contract('0x68c443c9F99ddDdB971D517B9e8B6e33CD95f0f2', contract_abi, tempSigner);
+  const updateContract = async () => {
+    const tempSigner = provider.getSigner();
+    const tempContract = new ethers.Contract('0x68c443c9F99ddDdB971D517B9e8B6e33CD95f0f2', contract_abi, tempSigner);
     setSigner(tempSigner)
-    setContract(tempContract) 
+    setContract(tempContract)
   }
-  const TokenInfo = async ()=>{
+  const TokenInfo = async () => {
     let nameOfToken = await contract.name();
-     let symbolOfToken = await contract.symbol();
-     let totalSupplyOfToken = await contract.totalSupply();
-     let decimalsOfToken = await contract.decimals();
-      setTokenName(nameOfToken)
-      setTokenSymbol(symbolOfToken)
-      // setTotalSupply(totalSupplyOfToken)
-      setDecimal(decimalsOfToken)
-     
-      // console.log(".....................", nameOfToken)
+    let symbolOfToken = await contract.symbol();
+    let decimalsOfToken = await contract.decimals();
+    setTokenName(nameOfToken)
+    setTokenSymbol(symbolOfToken)
+    setDecimal(decimalsOfToken)
   }
-  const sendToken = async ()=>{
-    // const tokens = Amount * 10 ** Decimal
+  const sendToken = async () => {
     let tokens = ethers.utils.parseUnits(Amount, 18)
     contract.transfer(Receiver, tokens).then((transferResult) => {
       console.dir(transferResult)
-      alert("sent token");
+      alert("wait for a moment for your transaction to complete");
     })
   }
-  // console.log(TokenName)
-  useEffect(()=>{
+
+  useEffect(() => {
     updateContract()
   }, [])
   return (
     <div className="App">
-     <Header/>
-     <div>
-        <button className="block-button" onClick={()=>connectWallet()}>Connect Wallet</button>
-    </div>
-    <p>{account}</p>
-    <button className="block-button" onClick={()=> TokenInfo()}>Token Info</button>
-   <p>Token Name: {TokenName}</p>
-   <p>Token Symbol: {TokenSymbol}</p>
-   {/* <p>Token TotalSupply: {TotalSupply}</p> */}
-   <p>Token Decimal: {Decimal}</p>
-   <button className="block-button" onClick={()=> sendToken()}>Token Transfer</button>
-   <input type="text" placeholder='address' onChange={(evt) => { setReceiver(evt.target.value); }} name="receiver" />
-   <input type="number" placeholder='amount' onChange={(evt) => { setAmount(evt.target.value); }} name="amount"/>
-     <Footer/>
+      <Header />
+      <div className='home'>
+        <h4>To transfer tokens first connect your wallet:</h4>
+        <div>
+          <button className="block-button" onClick={() => connectWallet()}>Connect Wallet</button>
+        </div>
+        <p>{account}</p>
+        <h4>Click here to get the Token information:</h4>
+        <button className="block-button" onClick={() => TokenInfo()}>Token Info</button>
+        <p>Token Name: {TokenName}</p>
+        <p>Token Symbol: {TokenSymbol}</p>
+        <p>Token Decimal: {Decimal}</p>
+        <h4>Enter the receiver's address and amount to transfer token:</h4>
+        <input type="text" placeholder='address' onChange={(evt) => { setReceiver(evt.target.value); }} name="receiver" />
+        <input type="number" placeholder='amount' onChange={(evt) => { setAmount(evt.target.value); }} name="amount" />
+        <div>
+          <button className="block-button" onClick={() => sendToken()}>Transfer Token</button>
+        </div>
+      </div>
+      <Footer />
     </div>
   );
 }
